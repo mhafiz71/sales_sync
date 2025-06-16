@@ -8,6 +8,7 @@ django = "*"
 django-tailwind = "*"
 django-extensions = "*"
 pillow = "*"
+python-decouple = "*"
 
 [dev-packages]
 
