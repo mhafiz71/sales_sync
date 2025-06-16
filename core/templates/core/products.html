@@ -4,24 +4,37 @@
 
 {% block content %}
 <div class="px-4 sm:px-0">
-    <div class="flex flex-col md:flex-row md:items-start md:justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 mb-4 md:mb-0">Products</h1>
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-            <form method="get" action="{% url 'products' %}" class="flex items-center">
+    <!-- Page Header: Redesigned with CSS Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center mb-8">
+        <!-- 1. Left Column: Page Title -->
+        <div class="text-center md:text-left">
+            <h1 class="text-3xl font-bold text-gray-900">Products</h1>
+        </div>
+
+        <!-- 2. Center Column: Search Form -->
+        <div class="w-full">
+            <form method="get" action="{% url 'products' %}" class="flex items-center max-w-lg mx-auto">
                 <input
                     type="text"
                     name="q"
                     value="{{ search_query|default:'' }}"
-                    placeholder="Search products..."
-                    class="p-2 border border-gray-300 rounded-l-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm w-48 sm:w-auto">
-                <button type="submit" class="bg-blue-600 text-white px-3 py-2 rounded-r-md text-sm font-medium hover:bg-blue-700">
+                    placeholder="Search by name or description..."
+                    class="p-2 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg ml-4 text-sm font-medium hover:bg-blue-700">
                     Search
                 </button>
             </form>
-            <a href="{% url 'product_add' %}" class="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-600 text-center">+ Add Product</a>
+        </div>
+
+        <!-- 3. Right Column: Add Product Button -->
+        <div class="text-center md:text-right">
+            <a href="{% url 'product_add' %}" class="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-600 text-center inline-block">
+                + Add Product
+            </a>
         </div>
     </div>
 
+    <!-- Products Grid (no changes needed here) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {% for product in products %}
         <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col">
