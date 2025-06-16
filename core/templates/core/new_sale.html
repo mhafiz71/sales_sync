@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}New Sale{% endblock %}
+
+{% block content %}
+<!-- The entire page is a form that will be submitted once -->
+<form id="sale-form" method="post">
+    {% csrf_token %}
+    
+    <!-- This hidden input is CRUCIAL. JavaScript will place the final cart data here as a JSON string before submitting -->
+    <input type="hidden" name="items_json" id="items-json-input">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- ===== LEFT COLUMN: AVAILABLE PRODUCTS ===== -->
+        <div class="lg:col-span-2">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">Select Products</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                <!-- Loop through products provided by the Django view -->
+                {% for product in products %}
+                    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col justify-between">
+                        <div>
+                            <p class="font-semibold text-gray-800">{{ product.name }}</p>
+                            <p class="text-sm text-gray-500">Stock: {{ product.stock }}</p>
+                            <p class="text-lg font-bold text-indigo-600 mt-2">${{ product.price|floatformat:2 }}</p>
+                        </div>
+                        <!-- This button has 'data-' attributes to pass product info to our JavaScript -->
+                        <button type="button" 
+                                class="add-item-btn mt-3 w-full bg-green-500 text-white px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-green-600 disabled:bg-gray-400"
+                                data-id="{{ product.id }}"
+                                data-name="{{ product.name }}"
+                                data-price="{{ product.price }}"
+                                data-stock="{{ product.stock }}"
+                                {% if product.stock <= 0 %}disabled{% endif %}>
+                            Add to Sale
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ===== RIGHT COLUMN: CURRENT SALE / CART ===== -->
+        <div class="bg-white p-6 rounded-lg shadow-lg h-fit">
+            <h2 class="text-xl font-bold text-gray-800 border-b pb-2 mb-4">Current Sale</h2>
+            
+            <!-- This container will be dynamically filled by JavaScript -->
+            <div id="sale-items-container" class="space-y-3 mb-4 min-h-[50px]">
+                <p id="empty-cart-message" class="text-gray-500">No items added yet.</p>
+            </div>
+
+            <!-- Totals section, also updated by JavaScript -->
+            <div class="border-t pt-4 space-y-2">
+                <div class="flex justify-between font-semibold">
+                    <span>Total Items:</span>
+                    <span id="total-items">0</span>
+                </div>
+                <div class="flex justify-between text-2xl font-bold text-indigo-600">
+                    <span>Grand Total:</span>
+                    <span id="grand-total">$0.00</span>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button type="submit" id="finalize-sale-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                    Finalize Sale
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- ===== THE JAVASCRIPT LOGIC ===== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // This object will hold the state of our cart. e.g., { '1': { name: 'Laptop', price: 1200, quantity: 1, stock: 10 }, ... }
+    const saleItems = {}; 
+    
+    // Get references to all the HTML elements we need to manipulate
+    const saleItemsContainer = document.getElementById('sale-items-container');
+    const emptyCartMessage = document.getElementById('empty-cart-message');
+    const totalItemsEl = document.getElementById('total-items');
+    const grandTotalEl = document.getElementById('grand-total');
+    const finalizeBtn = document.getElementById('finalize-sale-btn');
+    const jsonInput = document.getElementById('items-json-input');
+    const saleForm = document.getElementById('sale-form');
+
+    // Add a click listener to every "Add to Sale" button
+    document.querySelectorAll('.add-item-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+            const name = e.target.dataset.name;
+            const price = parseFloat(e.target.dataset.price);
+            const stock = parseInt(e.target.dataset.stock);
+
+            // If item is already in the cart, increment its quantity
+            if (saleItems[id]) {
+                if (saleItems[id].quantity < stock) {
+                    saleItems[id].quantity++;
+                } else {
+                    alert('Cannot add more than available in stock.');
+                }
+            } else { // Otherwise, add the new item to the cart
+                 if (stock > 0) {
+                    saleItems[id] = { name, price, quantity: 1, stock };
+                }
+            }
+            // After changing the data, redraw the cart display
+            updateSaleDisplay();
+        });
+    });
+
+    // This function is responsible for rendering the cart based on the 'saleItems' object
+    function updateSaleDisplay() {
+        saleItemsContainer.innerHTML = ''; // Clear the current cart display
+        let totalItems = 0;
+        let grandTotal = 0;
+
+        // If the cart is empty, show the "empty" message and disable the finalize button
+        if (Object.keys(saleItems).length === 0) {
+            saleItemsContainer.appendChild(emptyCartMessage);
+            finalizeBtn.disabled = true;
+        } else {
+            finalizeBtn.disabled = false; // Enable the button if there are items
+            emptyCartMessage.remove(); // Hide the "empty" message
+            
+            // Loop through each item in our 'saleItems' object
+            Object.entries(saleItems).forEach(([id, item]) => {
+                totalItems += item.quantity;
+                grandTotal += item.quantity * item.price;
+                
+                // Create the HTML for the cart item dynamically
+                const itemEl = document.createElement('div');
+                itemEl.className = 'flex justify-between items-center text-sm border-b pb-2';
+                itemEl.innerHTML = `
+                    <div>
+                        <p class="font-semibold">${item.name}</p>
+                        <p class="text-gray-500">$${item.price.toFixed(2)} x ${item.quantity}</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="font-bold mr-2">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <button type="button" class="remove-item-btn text-red-500 hover:text-red-700 font-bold" data-id="${id}">✖</button>
+                    </div>
+                `;
+                saleItemsContainer.appendChild(itemEl);
+            });
+        }
+        
+        // Update the totals display
+        totalItemsEl.textContent = totalItems;
+        grandTotalEl.textContent = `$${grandTotal.toFixed(2)}`;
+
+        // We must re-add event listeners to the new "remove" buttons every time we redraw the cart
+        document.querySelectorAll('.remove-item-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = e.target.dataset.id;
+                delete saleItems[id]; // Remove the item from our data object
+                updateSaleDisplay(); // Redraw the cart
+            });
+        });
+    }
+
+    // Before the form is submitted to Django...
+    saleForm.addEventListener('submit', (e) => {
+        if (Object.keys(saleItems).length === 0) {
+            e.preventDefault(); // Stop the form from submitting
+            alert('Please add items to the sale before finalizing.');
+            return;
+        }
+        // Take our JavaScript 'saleItems' object, convert it to a JSON string,
+        // and put it into the hidden input field. Now Django can receive it.
+        jsonInput.value = JSON.stringify(saleItems);
+    });
+});
+</script>
+{% endblock %}

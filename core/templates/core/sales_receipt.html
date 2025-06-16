@@ -1,0 +1,63 @@
+<!-- core/templates/core/sale_receipt.html -->
+{% extends 'base.html' %}
+
+{% block title %}Receipt #{{ sale.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg" id="receipt">
+    <!-- ... (receipt content as provided before) ... -->
+    <div class="flex justify-between items-start mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">SaleSync Inc.</h1>
+            <p class="text-gray-500">123 Business Rd<br>Commerce City, 12345</p>
+        </div>
+        <div class="text-right">
+            <h2 class="text-2xl font-bold uppercase text-gray-700">Receipt</h2>
+            <p class="text-gray-500"><strong>Receipt #:</strong> {{ sale.id }}</p>
+            <p class="text-gray-500"><strong>Date:</strong> {{ sale.created_at|date:"M d, Y" }}</p>
+        </div>
+    </div>
+    
+    <table class="w-full text-left mb-8">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="p-2 font-semibold text-gray-600">Product</th>
+                <th class="p-2 font-semibold text-gray-600 text-center">Qty</th>
+                <th class="p-2 font-semibold text-gray-600 text-right">Unit Price</th>
+                <th class="p-2 font-semibold text-gray-600 text-right">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in sale.saleitem_set.all %}
+            <tr class="border-b">
+                <td class="p-2">{{ item.product.name }}</td>
+                <td class="p-2 text-center">{{ item.quantity }}</td>
+                <td class="p-2 text-right">${{ item.price|floatformat:2 }}</td>
+                <td class="p-2 text-right">${{ item.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="flex justify-end mb-8">
+        <div class="w-full md:w-1/3">
+            <div class="flex justify-between font-bold text-xl text-gray-800">
+                <span>Grand Total</span>
+                <span>${{ sale.total_amount|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center text-gray-500 text-sm">
+        Thank you for your business!
+    </div>
+
+    <!-- This section will not be printed -->
+    <div class="mt-8 text-center no-print">
+        <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700">
+            Print Receipt
+        </button>
+        <a href="{% url 'sales' %}" class="ml-4 text-indigo-600 hover:underline">Back to Sales</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+<!-- core/templates/core/sales_report.html -->
+{% extends 'base.html' %}
+
+{% block title %}Sales Report{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+    <!-- Header and Date Picker (not printed) -->
+    <div class="no-print mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Sales Report</h1>
+        <form method="get" class="mt-4 p-4 bg-gray-50 rounded-lg border flex items-end space-x-4">
+            <div>
+                <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                <input type="date" name="start_date" id="start_date" value="{{ start_date }}" class="mt-1 p-2 border border-gray-300 rounded-md">
+            </div>
+            <div>
+                <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+                <input type="date" name="end_date" id="end_date" value="{{ end_date }}" class="mt-1 p-2 border border-gray-300 rounded-md">
+            </div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Generate Report</button>
+        </form>
+    </div>
+
+    <!-- Printable Report Section -->
+    <div id="report-content">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold">Sales Summary</h2>
+            <p class="text-gray-600">For the period: <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong></p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-center">
+            <div class="bg-green-100 p-4 rounded-lg">
+                <p class="text-sm text-green-800">Total Revenue</p>
+                <p class="text-3xl font-bold text-green-900">${{ total_revenue|floatformat:2 }}</p>
+            </div>
+            <div class="bg-blue-100 p-4 rounded-lg">
+                <p class="text-sm text-blue-800">Total Sales</p>
+                <p class="text-3xl font-bold text-blue-900">{{ total_sales_count }}</p>
+            </div>
+        </div>
+
+        <h3 class="text-xl font-semibold mb-4">Detailed Sales List</h3>
+        <table class="min-w-full divide-y divide-gray-200 border">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Sale ID</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Total Amount</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for sale in sales %}
+                <tr>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">#{{ sale.id }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{{ sale.created_at|date:"Y-m-d h:i A" }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-right text-sm text-gray-500">${{ sale.total_amount|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="px-6 py-4 text-center text-gray-500">No sales found in this period.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-8 text-center no-print">
+        <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700">
+            Print Report
+        </button>
+    </div>
+</div>
+{% endblock %}

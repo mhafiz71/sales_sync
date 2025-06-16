@@ -1,0 +1,124 @@
+{% load static tailwind_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My POS{% endblock %}</title>
+    {% tailwind_css %}
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { -webkit-print-color-adjust: exact; color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    {% if user.is_authenticated %}
+
+        <nav class="bg-white shadow-md no-print">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex-shrink-0">
+                        <a href="{% url 'products' %}" class="font-bold text-xl text-indigo-600">SaleSync</a>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="{% url 'products' %}" class="text-gray-700 hover:bg-gray-200 hover:text-black px-3 py-2 rounded-md text-sm font-medium">Products</a>
+                            <a href="{% url 'sales' %}" class="text-gray-700 hover:bg-gray-200 hover:text-black px-3 py-2 rounded-md text-sm font-medium">Sales History</a>
+                            <a href="{% url 'sales_report' %}" class="text-gray-700 hover:bg-gray-200 hover:text-black px-3 py-2 rounded-md text-sm font-medium">Sales Report</a>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center">
+                        <span class="text-gray-700 mr-4">Hi, {{ user.username }}</span>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-indigo-500 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-600">Logout</button>
+                        </form>
+                    </div>
+                    <div class="-mr-2 flex md:hidden">
+                        <button id="mobile-menu-button" type="button" class="bg-gray-100 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <span class="sr-only">Open main menu</span>
+                            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="md:hidden hidden" id="mobile-menu">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="{% url 'products' %}" class="text-gray-700 hover:bg-gray-200 block px-3 py-2 rounded-md text-base font-medium">Products</a>
+                    <a href="{% url 'sales' %}" class="text-gray-700 hover:bg-gray-200 block px-3 py-2 rounded-md text-base font-medium">Sales History</a>
+                    <a href="{% url 'sales_report' %}" class="text-gray-700 hover:bg-gray-200 block px-3 py-2 rounded-md text-base font-medium">Sales Report</a>
+                </div>
+                <div class="pt-4 pb-3 border-t border-gray-200">
+                    <div class="flex items-center px-5">
+                         <div class="flex-shrink-0"><span class="text-gray-700">Hi, {{ user.username }}</span></div>
+                        <form method="post" action="{% url 'logout' %}" class="ml-auto">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-indigo-500 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-600">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                const icons = mobileMenuButton.querySelectorAll('svg');
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    icons.forEach(icon => { icon.classList.toggle('hidden'); });
+                });
+            });
+        </script>
+    {% else %}
+
+        <nav class="bg-white shadow-md no-print">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-center h-16">
+                    <a href="{% url 'login' %}" class="font-bold text-xl text-indigo-600">SaleSync</a>
+                </div>
+            </div>
+        </nav>
+    {% endif %}
+
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+            {% with message_class=message.tags|default:'info' %}
+                <div class="p-4 mb-4 rounded-md flex items-center justify-between
+                    {% if message_class == 'success' %} bg-green-100 border border-green-400 text-green-700
+                    {% elif message_class == 'error' %} bg-red-100 border border-red-400 text-red-700
+                    {% elif message_class == 'warning' %} bg-yellow-100 border border-yellow-400 text-yellow-700
+                    {% else %} bg-blue-100 border border-blue-400 text-blue-700 {% endif %}"
+                    role="alert">
+                    <span class="font-medium">{{ message }}</span>
+                    <button type="button" class="ml-auto -mx-1.5 -my-1.5 p-1.5 rounded-lg focus:ring-2 inline-flex
+                        {% if message_class == 'success' %} hover:bg-green-200 focus:ring-green-400
+                        {% elif message_class == 'error' %} hover:bg-red-200 focus:ring-red-400
+                        {% elif message_class == 'warning' %} hover:bg-yellow-200 focus:ring-yellow-400
+                        {% else %} hover:bg-blue-200 focus:ring-blue-400 {% endif %}"
+                        onclick="this.parentElement.style.display='none';"
+                        aria-label="Close">
+                        <span class="sr-only">Dismiss</span>
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                </div>
+            {% endwith %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+    
+</body>
+</html>
