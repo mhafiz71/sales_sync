@@ -15,22 +15,35 @@ from .forms import ProductForm # Import the new form
 
 @login_required
 
-def products_view(request):
-    search_query = request.GET.get('q', '')
-    products_queryset = Product.objects.all().order_by('name')
+def products_view(request):    
+    all_products = Product.objects.all()
+    
+    total_products_count = all_products.count()
+    
+    total_inventory_value = all_products.aggregate(
+        total_value=Sum(F('price') * F('stock'))
+    )['total_value'] or 0 # 'or 0' handles the case of an empty database
 
+    low_stock_count = all_products.filter(stock__gt=0, stock__lte=10).count()
+    out_of_stock_count = all_products.filter(stock=0).count()
+
+    search_query = request.GET.get('q', '')
+    products_list = all_products # Start with all products
     if search_query:
-        products_queryset = products_queryset.filter(
-            Q(name__icontains=search_query) |
-            Q(description__icontains=search_query)
+        products_list = products_list.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
         )
 
     context = {
-        'products': products_queryset,
+        'products': products_list,
         'search_query': search_query,
+        
+        'total_products_count': total_products_count,
+        'total_inventory_value': total_inventory_value,
+        'low_stock_count': low_stock_count,
+        'out_of_stock_count': out_of_stock_count,
     }
     return render(request, 'core/products.html', context)
-
 @login_required
 def sales_view(request):
     filter_date_str = request.GET.get('filter_date')
