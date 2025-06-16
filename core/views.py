@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.db.models import Sum
 from datetime import datetime, timedelta
+from django.conf import settings
 from django.db.models import Sum, Count, F
 from django.db.models import Q
 import json
@@ -203,3 +205,11 @@ def sales_report_view(request):
     }
     
     return render(request, 'core/sales_report.html', context)
+
+class CustomLoginView(LoginView):
+    def dispatch(self, request, *args, **kwargs):
+
+        if request.user.is_authenticated:
+            return redirect(settings.LOGIN_REDIRECT_URL)
+        
+        return super().dispatch(request, *args, **kwargs)

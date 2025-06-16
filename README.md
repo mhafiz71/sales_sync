@@ -40,7 +40,7 @@ Follow these steps to get the project running on your local machine.
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/your-repo-name.git
+    git clone https://github.com/mhafiz71/sales_sync.git
     cd your-repo-name
     ```
 
@@ -105,7 +105,7 @@ You can now access the application at **http://127.0.0.1:8000/**. Log in with th
 ## Project Structure
 
 ```
-myproject/
+sales_sync/
 ├── core/                  # Main Django app for all business logic
 │   ├── migrations/
 │   ├── templates/core/    # HTML templates for the app
@@ -113,7 +113,7 @@ myproject/
 │   ├── models.py          # Database models (Product, Sale, etc.)
 │   ├── views.py           # Request/response logic
 │   └── ...
-├── myproject/             # Django project settings
+├── sales_project/             # Django project settings
 │   ├── settings.py
 │   └── urls.py
 ├── theme/                 # App for Tailwind CSS assets

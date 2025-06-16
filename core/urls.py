@@ -13,9 +13,9 @@ urlpatterns = [
     path('sales/<int:sale_id>/receipt/', core_views.sale_receipt_view, name='sale_receipt'),
 
     # Authentication
-    path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),
+    path('login/', core_views.CustomLoginView.as_view(template_name='core/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
-
+    
     path('', core_views.products_view, name='products'),
     path('products/add/', core_views.product_create_edit_view, name='product_add'),
     path('products/<int:pk>/edit/', core_views.product_create_edit_view, name='product_edit'),
