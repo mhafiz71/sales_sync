@@ -61,12 +61,14 @@ def sale_receipt_view(request, sale_id):
 
 @login_required
 def product_create_edit_view(request, pk=None):
+    if not request.user.is_staff:
+        messages.error(request, "You do not have permission to perform this action.")
+        return redirect('products')
+
     if pk:
-        # This is an edit
         product = get_object_or_404(Product, pk=pk)
         instance = product
     else:
-        # This is a create
         instance = None
 
     if request.method == 'POST':
@@ -81,15 +83,18 @@ def product_create_edit_view(request, pk=None):
     context = {'form': form}
     return render(request, 'core/product_form.html', context)
 
+
 @login_required
 def product_delete_view(request, pk):
+    if not request.user.is_staff:
+        messages.error(request, "You do not have permission to perform this action.")
+        return redirect('products')
+
     product = get_object_or_404(Product, pk=pk)
-    # We only process POST requests to prevent accidental deletion via GET
     if request.method == 'POST':
         product_name = product.name
         product.delete()
-        messages.success(request, f"Product '{product_name}' was deleted successfully.")
-    # Redirect back to the products list regardless of the method
+        messages.success(request, f"Product '{product_name}' was deleted successfully!")
     return redirect('products')
 
 @login_required
