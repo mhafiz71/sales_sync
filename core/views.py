@@ -5,6 +5,7 @@ from django.db import transaction
 from django.db.models import Sum
 from datetime import datetime, timedelta
 from django.db.models import Sum, Count, F
+from django.db.models import Q
 import json
 from .models import Product, Sale, SaleItem
 from .forms import ProductForm # Import the new form
@@ -13,11 +14,22 @@ from .forms import ProductForm # Import the new form
 # You just need to create the template and url.
 
 @login_required
-def products_view(request):
-    products = Product.objects.all()
-    context = {'products': products}
-    return render(request, 'core/products.html', context)
 
+def products_view(request):
+    search_query = request.GET.get('q', '')
+    products_queryset = Product.objects.all().order_by('name')
+
+    if search_query:
+        products_queryset = products_queryset.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    context = {
+        'products': products_queryset,
+        'search_query': search_query,
+    }
+    return render(request, 'core/products.html', context)
 
 @login_required
 def sales_view(request):

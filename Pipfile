@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 django = "*"
 django-tailwind = "*"
+django-extensions = "*"
 
 [dev-packages]
 
