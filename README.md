@@ -46,13 +46,15 @@ Follow these steps to get the project running on your local machine.
 
 2.  **Create and activate a virtual environment:**
     ```bash
-    # For macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
+    # Install pipenv
+    pip install pipenv
 
-    # For Windows
-    python -m venv venv
-    venv\Scripts\activate
+    # Install project dependencies
+    pipenv install
+
+    # You may need to activate environment with
+    pipenv shell
+ 
     ```
 
 3.  **Install Python dependencies:**
