@@ -36,8 +36,8 @@
             <tr class="border-b">
                 <td class="p-2">{{ item.product.name }}</td>
                 <td class="p-2 text-center">{{ item.quantity }}</td>
-                <td class="p-2 text-right">${{ item.price|floatformat:2 }}</td>
-                <td class="p-2 text-right">${{ item.subtotal|floatformat:2 }}</td>
+                <td class="p-2 text-right">₵{{ item.price|floatformat:2 }}</td>
+                <td class="p-2 text-right">₵{{ item.subtotal|floatformat:2 }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -47,16 +47,16 @@
         <div class="w-full md:w-1/3">
             <div class="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>${{ sale.total_amount|floatformat:2 }}</span>
+                <span>₵{{ sale.total_amount|floatformat:2 }}</span>
             </div>
             <div class="flex justify-between text-gray-600">
                 <span>Tax (0%)</span>
-                <span>$0.00</span>
+                <span>₵0.00</span>
             </div>
             <hr class="my-2">
             <div class="flex justify-between font-bold text-xl text-gray-800">
                 <span>Grand Total</span>
-                <span>${{ sale.total_amount|floatformat:2 }}</span>
+                <span>₵{{ sale.total_amount|floatformat:2 }}</span>
             </div>
         </div>
     </div>
