@@ -22,7 +22,7 @@
                         <div>
                             <p class="font-semibold text-gray-800">{{ product.name }}</p>
                             <p class="text-sm text-gray-500">Stock: {{ product.stock }}</p>
-                            <p class="text-lg font-bold text-indigo-600 mt-2">${{ product.price|floatformat:2 }}</p>
+                            <p class="text-lg font-bold text-indigo-600 mt-2">₵{{ product.price|floatformat:2 }}</p>
                         </div>
                         <!-- This button has 'data-' attributes to pass product info to our JavaScript -->
                         <button type="button" 
@@ -56,7 +56,7 @@
                 </div>
                 <div class="flex justify-between text-2xl font-bold text-indigo-600">
                     <span>Grand Total:</span>
-                    <span id="grand-total">$0.00</span>
+                    <span id="grand-total">₵0.00</span>
                 </div>
             </div>
 

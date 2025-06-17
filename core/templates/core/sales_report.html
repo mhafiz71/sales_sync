@@ -31,7 +31,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-center">
             <div class="bg-green-100 p-4 rounded-lg">
                 <p class="text-sm text-green-800">Total Revenue</p>
-                <p class="text-3xl font-bold text-green-900">${{ total_revenue|floatformat:2 }}</p>
+                <p class="text-3xl font-bold text-green-900">₵{{ total_revenue|floatformat:2 }}</p>
             </div>
             <div class="bg-blue-100 p-4 rounded-lg">
                 <p class="text-sm text-blue-800">Total Sales</p>
@@ -53,7 +53,7 @@
                 <tr>
                     <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">#{{ sale.id }}</td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{{ sale.created_at|date:"Y-m-d h:i A" }}</td>
-                    <td class="px-4 py-2 whitespace-nowrap text-right text-sm text-gray-500">${{ sale.total_amount|floatformat:2 }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-right text-sm text-gray-500">₵{{ sale.total_amount|floatformat:2 }}</td>
                 </tr>
                 {% empty %}
                 <tr>

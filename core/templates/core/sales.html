@@ -45,7 +45,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ sale.id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ sale.created_at|date:"M d, Y, h:i A" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ sale.customer_name|default:"N/A" }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">${{ sale.total_amount|floatformat:2 }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">₵{{ sale.total_amount|floatformat:2 }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <a href="{% url 'sale_receipt' sale.id %}" class="text-indigo-600 hover:text-indigo-900">View Receipt</a>
                     </td>
