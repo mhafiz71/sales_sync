@@ -44,7 +44,7 @@ Follow these steps to get the project running on your local machine.
     cd your-repo-name
     ```
 
-2.  **Create and activate a virtual environment:**
+2.  **Create and activate a virtual environment to install Python dependencies::**
     ```bash
     # Install pipenv
     pip install pipenv
@@ -57,24 +57,18 @@ Follow these steps to get the project running on your local machine.
  
     ```
 
-3.  **Install Python dependencies:**
-    *(If a `requirements.txt` file is not present, create one with `pip freeze > requirements.txt`)*
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  **Install and build frontend dependencies:**
+3.  **Install and build frontend dependencies:**
     This command initializes Tailwind CSS and installs its node modules.
     ```bash
     python manage.py tailwind install
     ```
 
-5.  **Apply database migrations:**
+4.  **Apply database migrations:**
     ```bash
     python manage.py migrate
     ```
 
-6.  **Create a superuser to log in:**
+5.  **Create a superuser to log in:**
     Follow the prompts to create your admin account.
     ```bash
     python manage.py createsuperuser
