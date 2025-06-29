@@ -25,8 +25,13 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['mhafiz71.pythonanywhere.com']
+ALLOWED_HOSTS = [
+    'mhafiz71.pythonanywhere.com',
+    'sales_sync.onrender.com'
+]
 
+if os.environ.get('RENDER'):
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 
